@@ -1,0 +1,41 @@
+stages:
+  - sas
+  - build
+
+
+  
+scan-credential:
+  stage: sas
+  image: python:latest
+  # description: 'Scanning the repository looking for credentials or sensitive information'
+  script:
+    - pip3 install trufflehog3
+    - echo "Find Credentials into de code."
+    - |
+      trufflehog3 --no-history --format json --output credential_report.json || exit 0
+      ls -la
+      trufflehog3 -R credential_report.json --output report.html
+      ls -la
+
+  allow_failure: true
+  artifacts:
+    paths:
+      - report.html
+    expire_in: 30 days
+# --------------------------------------------------------
+build-image:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+
+  script:
+    - echo "Here we need to uncomment the code below to build the Docker Image, please ask about container registry"
+    #- mkdir -p /kaniko/.docker
+    #- echo "{\"auths\":{\"$ACR_URL\":{\"username\":\"$ACR_USER\",\"password\":\"$ACR_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    #- >-
+    #      /kaniko/executor
+    #      --cache=true
+    #      --context ...
+    #      --dockerfile ...
+    #      --destination ...
